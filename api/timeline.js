@@ -1,5 +1,19 @@
 const SHEET_URL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vT7H9ZZFHQzpy3zVpctYpBnm3QaiPNTEZJJWw8S-N_2qnY9OVU1v8o2OAbET8vSiJcfReySw4invFrR/pub?output=csv";
+const SHEET_HTML_URL =
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vT7H9ZZFHQzpy3zVpctYpBnm3QaiPNTEZJJWw8S-N_2qnY9OVU1v8o2OAbET8vSiJcfReySw4invFrR/pubhtml/sheet?headers=false&gid=0";
+
+function imagesFromPublishedHtml(html) {
+  const matches = html.matchAll(
+    /<img\b[^>]*\bsrc=["'](https:\/\/docs\.google\.com\/sheets-images-rt\/[^"']+)["']/gi
+  );
+
+  return [...matches].map((match) =>
+    match[1]
+      .replaceAll("&amp;", "&")
+      .replace(/=w\d+(?:-h\d+)?$/, "=w1200")
+  );
+}
 
 function parseCsv(input) {
   const rows = [];
@@ -38,7 +52,7 @@ function parseCsv(input) {
   return rows;
 }
 
-function timelineFromCsv(csv) {
+function timelineFromCsv(csv, embeddedImages = []) {
   const rows = parseCsv(csv.trim());
   if (rows.length < 2) return [];
 
@@ -56,7 +70,10 @@ function timelineFromCsv(csv) {
     .map((values, sourceIndex) => ({
       year: (values[yearIndex] || "").trim(),
       content: (values[contentIndex] || "").trim(),
-      image: imageIndex === -1 ? "" : (values[imageIndex] || "").trim(),
+      image:
+        (imageIndex === -1 ? "" : (values[imageIndex] || "").trim()) ||
+        embeddedImages[sourceIndex] ||
+        "",
       sourceIndex,
     }))
     .filter((entry) => entry.year && entry.content)
@@ -76,15 +93,22 @@ export default async function handler(request, response) {
   }
 
   try {
-    const sheetResponse = await fetch(SHEET_URL, {
+    const requestOptions = {
       headers: { "User-Agent": "SSF Timeline Widget/1.0" },
-    });
+    };
+    const [sheetResponse, htmlResponse] = await Promise.all([
+      fetch(SHEET_URL, requestOptions),
+      fetch(SHEET_HTML_URL, requestOptions),
+    ]);
 
     if (!sheetResponse.ok) {
       throw new Error(`Google Sheets returned ${sheetResponse.status}.`);
     }
 
-    const entries = timelineFromCsv(await sheetResponse.text());
+    const embeddedImages = htmlResponse.ok
+      ? imagesFromPublishedHtml(await htmlResponse.text())
+      : [];
+    const entries = timelineFromCsv(await sheetResponse.text(), embeddedImages);
     response.setHeader(
       "Cache-Control",
       "public, s-maxage=300, stale-while-revalidate=86400"
@@ -98,4 +122,4 @@ export default async function handler(request, response) {
   }
 }
 
-export { parseCsv, timelineFromCsv };
+export { imagesFromPublishedHtml, parseCsv, timelineFromCsv };
