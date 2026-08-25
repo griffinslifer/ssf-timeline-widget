@@ -61,7 +61,7 @@ button {
 .ssf-timeline__track {
   position: relative;
   display: flex;
-  align-items: flex-start;
+  align-items: stretch;
   gap: clamp(24px, 4vw, 52px);
   width: max-content;
   min-width: 100%;
@@ -80,6 +80,7 @@ button {
 
 .ssf-timeline__entry {
   position: relative;
+  display: flex;
   flex: 0 0 var(--ssf-card-width);
   padding-top: 54px;
   scroll-snap-align: center;
@@ -110,6 +111,7 @@ button {
 }
 
 .ssf-timeline__card {
+  flex: 1;
   min-height: 220px;
   padding: 25px 26px 28px;
   border: 1px solid rgba(59, 52, 48, 0.18);
@@ -136,10 +138,12 @@ button {
 .ssf-timeline__image {
   display: block;
   width: 100%;
-  height: 150px;
+  height: 180px;
   margin: -1px -1px 22px;
   border-radius: 1px;
-  object-fit: cover;
+  background: var(--ssf-powder);
+  object-fit: contain;
+  object-position: center;
 }
 
 .ssf-timeline__control {
@@ -203,15 +207,6 @@ button {
   background: var(--ssf-powder);
   text-align: center;
   line-height: 1.5;
-}
-
-.ssf-timeline__hint {
-  margin: 5px 0 0;
-  color: var(--ssf-espresso);
-  font-size: 0.72rem;
-  letter-spacing: 0.12em;
-  text-align: center;
-  text-transform: uppercase;
 }
 
 @media (max-width: 640px) {
