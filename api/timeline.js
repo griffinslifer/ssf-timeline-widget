@@ -108,7 +108,10 @@ export default async function handler(request, response) {
     const embeddedImages = htmlResponse.ok
       ? imagesFromPublishedHtml(await htmlResponse.text())
       : [];
-    const entries = timelineFromCsv(await sheetResponse.text(), embeddedImages);
+    const proxiedImages = embeddedImages.map(
+      (_, index) => `/api/image?index=${index}`
+    );
+    const entries = timelineFromCsv(await sheetResponse.text(), proxiedImages);
     response.setHeader(
       "Cache-Control",
       "public, s-maxage=300, stale-while-revalidate=86400"
