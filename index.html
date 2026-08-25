@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <title>Slifer Smith &amp; Frampton Timeline</title>
+    <link rel="stylesheet" href="/timeline.css" />
+    <script src="/timeline.js" defer></script>
+  </head>
+  <body>
+    <main class="ssf-timeline" aria-label="Slifer Smith & Frampton history">
+      <div class="ssf-timeline__frame">
+        <button
+          class="ssf-timeline__control ssf-timeline__control--previous"
+          type="button"
+          aria-label="Previous timeline event"
+          data-direction="previous"
+          disabled
+        >
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="m15 5-7 7 7 7" />
+          </svg>
+        </button>
+
+        <div
+          class="ssf-timeline__viewport"
+          id="ssf-timeline-viewport"
+          tabindex="0"
+          aria-label="Company timeline. Scroll horizontally or use the arrow buttons."
+        >
+          <div class="ssf-timeline__track" id="ssf-timeline-track">
+            <p class="ssf-timeline__status" role="status">Loading timeline…</p>
+          </div>
+        </div>
+
+        <button
+          class="ssf-timeline__control ssf-timeline__control--next"
+          type="button"
+          aria-label="Next timeline event"
+          data-direction="next"
+          disabled
+        >
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="m9 5 7 7-7 7" />
+          </svg>
+        </button>
+      </div>
+    </main>
+  </body>
+</html>
